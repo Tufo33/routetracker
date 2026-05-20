@@ -13,3 +13,14 @@ export async function GET() {
     client.release()
     return NextResponse.json(result.rows)
 }
+
+export async function POST(request: Request) {
+    const body = await request.json()
+    const client = await pool.connect()
+    const result = await client.query(
+        'INSERT INTO routes (driver_id, status, stops, total_packages) VALUES ($1, $2, $3, $4) RETURNING *',
+        [body.driver_id, body.status, body.stops, body.total_packages]
+      )
+    client.release()
+    return NextResponse.json(result.rows[0])
+}
