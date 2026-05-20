@@ -4,9 +4,11 @@ import { useState, useEffect } from "react";
 
 interface Route {
   id: number
-  driver_id: number
+  name: string
+  email: string
   status: string
-  distance_km: number
+  stops: number
+  total_packages: number
 }
 
 export default function Home() {
@@ -29,17 +31,21 @@ export default function Home() {
           <tr>
             <th>ID</th>
             <th>Fahrer</th>
+            <th>Email</th>
             <th>Status</th>
-            <th>Distanz</th>
+            <th>Stops</th>
+            <th>Pakete</th>
           </tr>
         </thead>
         <tbody>
           {routes.map((route) => (
             <tr key={route.id}>
               <td>{route.id}</td>
-              <td>{route.driver_id}</td>
+              <td>{route.name}</td>
+              <td>{route.email}</td>
               <td>{route.status}</td>
-              <td>{route.distance_km}</td>
+              <td>{route.stops}</td>
+              <td>{route.total_packages}</td>
             </tr>
           ))}
         </tbody>
