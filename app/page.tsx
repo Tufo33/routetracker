@@ -44,6 +44,12 @@ export default function Home() {
       body: JSON.stringify(formData)
     })
     fetchRoutes()
+    setFormData({
+      driver_id: '',
+      status: '',
+      stops: '',
+      total_packages: ''
+    })
   }
  
   return(
