@@ -11,9 +11,16 @@ interface Route {
   total_packages: number
 }
 
+interface Driver {
+  id: number
+  name: string
+}
+
 export default function Home() {
 
   const [routes, setRoutes] = useState<Route[]>([])
+  const [drivers, setDrivers] = useState<Driver[]>([])
+  const [loading, setLoading] = useState(true)
   const [formData, setFormData] = useState({
     driver_id: '',
     status: '',
@@ -23,13 +30,22 @@ export default function Home() {
   const [editingRoute, setEditingRoute] = useState<Route | null>(null)
 
   async function fetchRoutes() {
+    setLoading(true)
     const res = await fetch("/api/routes")
     const data = await res.json()
     setRoutes(data)
+    setLoading(false)
+  }
+
+  async function fetchDrivers() {
+    const res = await fetch("/api/drivers")
+    const data = await res.json()
+    setDrivers(data)
   }
 
   useEffect(() => {
     fetchRoutes()
+    fetchDrivers()
   }, [])
 
   function getStatusStyle(status: string) {
@@ -39,6 +55,10 @@ export default function Home() {
   }
 
   async function handleSubmit() {
+    if(formData.driver_id === '' || formData.status === '' || formData.stops === '' || formData.total_packages === '' ){
+      alert('Bitte alle Felder ausfüllen!')
+      return
+    }
     await fetch('/api/routes', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -107,13 +127,15 @@ export default function Home() {
       )}
       <div className="mb-6 p-4 border rounded">
         <h2 className="text-xl font-bold mb-4">Neue Route</h2>
-        <input
-          type="number"
-          placeholder="Fahrer ID"
+        <select 
           className="border p-2 mr-2"
-          value={formData.driver_id}
-          onChange={(e) => setFormData({...formData, driver_id: e.target.value})}  
-        />
+          value={formData.driver_id} 
+          onChange={(e) => setFormData({...formData, driver_id: e.target.value})}>
+            <option className="text-black" value="">-- Fahrer wählen --</option>
+              {drivers.map((driver) => (
+                <option className="text-black" key={driver.id} value={driver.id}>{driver.name}</option>
+            ))}
+        </select>
         <input
           type="text"
           placeholder="Status"
@@ -139,6 +161,7 @@ export default function Home() {
           Speichern
         </button>
       </div>
+      {loading && <p>Daten werden geladen</p>}
       <table className="w-full border-collapse">
         <thead>
           <tr className="bg-blue-600 text-white">
