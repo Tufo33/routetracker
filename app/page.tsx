@@ -20,6 +20,7 @@ export default function Home() {
     stops: '',
     total_packages: ''
   })
+  const [editingRoute, setEditingRoute] = useState<Route | null>(null)
 
   async function fetchRoutes() {
     const res = await fetch("/api/routes")
@@ -60,10 +61,50 @@ export default function Home() {
     })
     fetchRoutes()
   }
- 
+  
+  function handleEdit(route: Route) {
+    setEditingRoute(route)
+  }
+
+  async function handleUpdate() {
+    await fetch('/api/routes', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json'},
+      body: JSON.stringify(editingRoute)
+    })
+    fetchRoutes()
+    setEditingRoute(null)
+  }
+
   return(
     <div className="p-8">
       <h1 className="text-3xl font-bold mb-6">RouteTracker</h1>
+      {editingRoute && (
+        <div className="mb-6 p-4 border rounded bg-yellow-50">
+          <h2 className="text-xl font-bold mb-4">Route bearbeiten</h2>
+            <input 
+              type="text"
+              className="border p-2 mr-2"
+              value={editingRoute.status}
+              onChange={(e) => setEditingRoute({...editingRoute, status: e.target.value})}
+            />  
+            <input 
+              type="number"
+              className="border p-2 mr-2"
+              value={String(editingRoute.stops)}
+              onChange={(e) => setEditingRoute({...editingRoute, stops:Number(e.target.value)})}
+            />  
+            <input 
+              type="number"
+              className="border p-2 mr-2"
+              value={String(editingRoute.total_packages)}
+              onChange={(e) => setEditingRoute({...editingRoute, total_packages:Number(e.target.value)})}
+            />  
+            <button onClick={handleUpdate} className="bg-green-600 text-white p-2 rounded">
+              Speichern
+            </button>
+        </div>
+      )}
       <div className="mb-6 p-4 border rounded">
         <h2 className="text-xl font-bold mb-4">Neue Route</h2>
         <input
@@ -122,10 +163,15 @@ export default function Home() {
               <td className="p-3">{route.total_packages}</td>
               <td className="p-3">
                 <button 
+                  onClick={() => handleEdit(route)}
+                  className="bg-yellow-500 text-white px-2 py-1 rounded mr-2">
+                  Bearbeiten
+                </button>
+                <button 
                   onClick={() => handleDelete(route.id)}
                   className="bg-red-500 text-white px-2 py-1 rounded">
                   Löschen
-                  </button>
+                </button>
               </td>
             </tr>
           ))}

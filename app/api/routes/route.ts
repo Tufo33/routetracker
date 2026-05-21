@@ -36,3 +36,15 @@ export async function DELETE(request: Request) {
     client.release()
     return NextResponse.json({ message: 'Route gelöscht'})
 }
+
+export async function PUT(request: Request) {
+    const body = await request.json()
+    const { id } = body
+    const client = await pool.connect()
+    const result = await client.query(
+        'UPDATE routes SET status = $1, stops = $2, total_packages = $3 WHERE id = $4',
+        [body.status, body.stops, body.total_packages, body.id]
+    )
+    client.release()
+    return NextResponse.json(result.rows)
+}
