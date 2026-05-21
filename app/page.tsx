@@ -74,12 +74,15 @@ export default function Home() {
   }
 
   async function handleDelete(id: number) {
-    await fetch('/api/routes', {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id })
-    })
-    fetchRoutes()
+    const bestaetigung = confirm("Möchtest du diese Route wirklich löschen?")
+    if (bestaetigung === true) {
+      await fetch('/api/routes', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      })
+      fetchRoutes()
+    }
   }
   
   function handleEdit(route: Route) {
@@ -101,13 +104,16 @@ export default function Home() {
       <h1 className="text-3xl font-bold mb-6">RouteTracker</h1>
       {editingRoute && (
         <div className="mb-6 p-4 border rounded bg-yellow-50">
-          <h2 className="text-xl font-bold mb-4">Route bearbeiten</h2>
-            <input 
-              type="text"
-              className="border p-2 mr-2"
+          <h2 className="text-xl font-bold mb-4 text-black">Route bearbeiten</h2>
+            <select
+              className="text-black border p-2 mr-2"
               value={editingRoute.status}
               onChange={(e) => setEditingRoute({...editingRoute, status: e.target.value})}
-            />  
+            >
+              <option className="text-black" value='unterwegs'>unterwegs</option>
+              <option className="text-black" value='geplant'>geplant</option>
+              <option className="text-black" value='abgeschlossen'>abgeschlossen</option>
+            </select> 
             <input 
               type="number"
               className="border p-2 mr-2"
@@ -136,13 +142,15 @@ export default function Home() {
                 <option className="text-black" key={driver.id} value={driver.id}>{driver.name}</option>
             ))}
         </select>
-        <input
-          type="text"
-          placeholder="Status"
+        <select
           className="border p-2 mr-2"
           value={formData.status}
-          onChange={(e) => setFormData({...formData, status: e.target.value})}  
-        />
+          onChange={(e) => setFormData({...formData, status: e.target.value})}>
+            <option className="text-black" value="">-- Status wählen --</option>
+            <option className="text-black" value="unterwegs">unterwegs</option>
+            <option className="text-black" value="geplant">geplant</option>
+            <option className="text-black" value="abgeschlossen">abgeschlossen</option>
+        </select>
         <input
           type="number"
           placeholder="stops"
