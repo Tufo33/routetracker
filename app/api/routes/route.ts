@@ -24,3 +24,15 @@ export async function POST(request: Request) {
     client.release()
     return NextResponse.json(result.rows[0])
 }
+
+export async function DELETE(request: Request) {
+    const body = await request.json()
+    const { id } = body
+    const client = await pool.connect()
+    const result = await client.query(
+        'DELETE FROM routes WHERE id = $1', 
+        [id]
+    )    
+    client.release()
+    return NextResponse.json({ message: 'Route gelöscht'})
+}

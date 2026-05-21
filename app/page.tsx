@@ -51,6 +51,15 @@ export default function Home() {
       total_packages: ''
     })
   }
+
+  async function handleDelete(id: number) {
+    await fetch('/api/routes', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id })
+    })
+    fetchRoutes()
+  }
  
   return(
     <div className="p-8">
@@ -98,6 +107,7 @@ export default function Home() {
             <th className="p-3 text-left">Status</th>
             <th className="p-3 text-left">Stops</th>
             <th className="p-3 text-left">Pakete</th>
+            <th className="p-3 text-left">Aktion</th>
           </tr>
         </thead>
         <tbody>
@@ -110,6 +120,13 @@ export default function Home() {
                 <span className={getStatusStyle(route.status)} >{route.status}</span></td>
               <td className="p-3">{route.stops}</td>
               <td className="p-3">{route.total_packages}</td>
+              <td className="p-3">
+                <button 
+                  onClick={() => handleDelete(route.id)}
+                  className="bg-red-500 text-white px-2 py-1 rounded">
+                  Löschen
+                  </button>
+              </td>
             </tr>
           ))}
         </tbody>
