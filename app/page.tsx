@@ -1,5 +1,6 @@
 "use client"
 
+import { setTimeout } from "node:timers";
 import { useState, useEffect } from "react";
 
 interface Route {
@@ -29,9 +30,11 @@ export default function Home() {
   })
   const [filterStatus, setFilterStatus] = useState("")
   const [filteredRoutes, setFilteredRoutes] = useState<Route[]>([])
-
   const [editingRoute, setEditingRoute] = useState<Route | null>(null)
-
+  const [toast, setToast] = useState({
+    message: "",
+    visible: false,
+  })
 
 
   async function fetchRoutes() {
@@ -62,6 +65,13 @@ export default function Home() {
     }
   },[filterStatus])
 
+  function showToast(message: string) {
+    setToast({ message, visible: true})
+    setTimeout(() => {
+      setToast({message: "", visible: false})
+    }, 3000);
+  }
+
   function getStatusStyle(status: string) {
     if (status === 'unterwegs') return 'bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm'
     if (status === 'geplant') return 'bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-sm'
@@ -85,6 +95,7 @@ export default function Home() {
       stops: '',
       total_packages: ''
     })
+    showToast("Erfolgreich aktualisiert!")
   }
 
   async function handleDelete(id: number) {
@@ -96,6 +107,7 @@ export default function Home() {
         body: JSON.stringify({ id })
       })
       fetchRoutes()
+      showToast("Erfolgreich gelöscht!")
     }
   }
   
@@ -111,6 +123,7 @@ export default function Home() {
     })
     fetchRoutes()
     setEditingRoute(null)
+    showToast("Erfolgreich updated")
   }
 
   const anzahlUnterwegs = routes.filter(route => route.status === "unterwegs").length
@@ -119,6 +132,11 @@ export default function Home() {
 
   return(
     <div className="p-8">
+      {toast.visible && (
+        <div className="fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg">
+          {toast.message}
+        </div>
+      )}
       <h1 className="text-3xl font-bold mb-6">RouteTracker</h1>
       {editingRoute && (
         <div className="mb-6 p-4 border rounded bg-yellow-50">
@@ -134,13 +152,13 @@ export default function Home() {
             </select> 
             <input 
               type="number"
-              className="border p-2 mr-2"
+              className="border p-2 mr-2 text-black"
               value={String(editingRoute.stops)}
               onChange={(e) => setEditingRoute({...editingRoute, stops:Number(e.target.value)})}
             />  
             <input 
               type="number"
-              className="border p-2 mr-2"
+              className="border p-2 mr-2 text-black"
               value={String(editingRoute.total_packages)}
               onChange={(e) => setEditingRoute({...editingRoute, total_packages:Number(e.target.value)})}
             />  
