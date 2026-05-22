@@ -35,6 +35,7 @@ export default function Home() {
     message: "",
     visible: false,
   })
+  const [searchTerm, setSearchTerm] = useState("")
 
 
   async function fetchRoutes() {
@@ -129,6 +130,7 @@ export default function Home() {
   const anzahlUnterwegs = routes.filter(route => route.status === "unterwegs").length
   const anzahlGeplant = routes.filter(route => route.status === "geplant").length
   const anzahlAbgeschlossen = routes.filter(route => route.status === "abgeschlossen").length
+  const searchedRoutes = filteredRoutes.filter(route => route.name.toLowerCase().includes(searchTerm.toLowerCase()) )
 
   return(
     <div className="p-8">
@@ -207,6 +209,13 @@ export default function Home() {
       </div>
       {loading && <p>Daten werden geladen</p>}
       <div className="mb-4">
+          <input
+            className="border p-2 mr-2 mb-4 rounded w-64"
+            type="text"
+            placeholder="Fahrer suchen..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+          />
         <button className={filterStatus === "" ? "bg-gray-800 rounded px-1 m-1" : "bg-gray-600 rounded px-1 m-1"} onClick={() => setFilterStatus("")}>Alle</button>
         <button className={filterStatus === "unterwegs" ? "bg-green-800 rounded px-1 m-1" : "bg-green-600 rounded px-1 m-1"} onClick={() => setFilterStatus("unterwegs")}>Unterwegs</button>
         <button className={filterStatus === "geplant" ? "bg-yellow-800 rounded px-1 m-1" : "bg-yellow-600 px-1 m-1"} onClick={() => setFilterStatus('geplant')}>Geplant</button>
@@ -240,7 +249,7 @@ export default function Home() {
           </tr>
         </thead>
         <tbody>
-          {filteredRoutes.map((route) => (
+          {searchedRoutes.map((route) => (
             <tr key={route.id} className="border-b hover:bg-gray-50 hover:text-black">
               <td className="p-3">{route.id}</td>
               <td className="p-3">{route.name}</td>
