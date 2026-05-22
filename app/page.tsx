@@ -38,11 +38,11 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState("")
   const [sortField, setSortField] = useState("id")
   const [sortDirection, setSortDirection] = useState("asc")
-
+  const [currentPage, setCurrentPage] = useState(1)
 
   async function fetchRoutes() {
     setLoading(true)
-    const res = await fetch("/api/routes")
+    const res = await fetch(`/api/routes?page=${currentPage}`)
     const data = await res.json()
     setRoutes(data)
     setLoading(false)
@@ -57,7 +57,7 @@ export default function Home() {
   useEffect(() => {
     fetchRoutes()
     fetchDrivers()
-  }, [])
+  }, [currentPage])
 
   useEffect(() => {
     if (filterStatus === "") {
@@ -66,7 +66,7 @@ export default function Home() {
       const gefiltert = routes.filter(route => route.status === filterStatus)
       setFilteredRoutes(gefiltert)
     }
-  },[filterStatus])
+  },[filterStatus, routes])
 
   function showToast(message: string) {
     setToast({ message, visible: true})
@@ -294,6 +294,12 @@ export default function Home() {
           ))}
         </tbody>
       </table>
+      <button 
+        disabled = { currentPage === 1 }
+        className={currentPage === 1? "bg-gray-200 p-1 rounded m-1 cursor-not-allowed" : "bg-gray-400 p-1 rounded m-1"} 
+          onClick={() => setCurrentPage(currentPage -1)} 
+      >Zurück</button>
+      <button className="bg-gray-400 p-1 rounded m-1" onClick={() => setCurrentPage(currentPage +1)}>Weiter</button>
     </div>
   )
 }

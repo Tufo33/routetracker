@@ -5,10 +5,13 @@ const pool = new Pool({
     connectionString: process.env.DATABASE_URL
 })
 
-export async function GET() {
+export async function GET(request: Request) {
+    const { searchParams } = new URL(request.url)
+    const page = Number(searchParams.get('page')) || 1
     const client = await pool.connect()
+    const offset = ( page - 1) * 10
     const result = await client.query(
-        'SELECT routes.id, drivers.name, drivers.email, routes.status, routes.stops, routes.total_packages FROM routes JOIN drivers ON routes.driver_id = drivers.id'
+        `SELECT routes.id, drivers.name, drivers.email, routes.status, routes.stops, routes.total_packages FROM routes JOIN drivers ON routes.driver_id = drivers.id LIMIT 10 OFFSET ${offset}`
     )
     client.release()
     return NextResponse.json(result.rows)
