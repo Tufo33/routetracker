@@ -32,6 +32,8 @@ export default function Home() {
 
   const [editingRoute, setEditingRoute] = useState<Route | null>(null)
 
+
+
   async function fetchRoutes() {
     setLoading(true)
     const res = await fetch("/api/routes")
@@ -111,6 +113,10 @@ export default function Home() {
     setEditingRoute(null)
   }
 
+  const anzahlUnterwegs = routes.filter(route => route.status === "unterwegs").length
+  const anzahlGeplant = routes.filter(route => route.status === "geplant").length
+  const anzahlAbgeschlossen = routes.filter(route => route.status === "abgeschlossen").length
+
   return(
     <div className="p-8">
       <h1 className="text-3xl font-bold mb-6">RouteTracker</h1>
@@ -182,11 +188,26 @@ export default function Home() {
         </button>
       </div>
       {loading && <p>Daten werden geladen</p>}
-      <div>
+      <div className="mb-4">
         <button className={filterStatus === "" ? "bg-gray-800 rounded px-1 m-1" : "bg-gray-600 rounded px-1 m-1"} onClick={() => setFilterStatus("")}>Alle</button>
         <button className={filterStatus === "unterwegs" ? "bg-green-800 rounded px-1 m-1" : "bg-green-600 rounded px-1 m-1"} onClick={() => setFilterStatus("unterwegs")}>Unterwegs</button>
         <button className={filterStatus === "geplant" ? "bg-yellow-800 rounded px-1 m-1" : "bg-yellow-600 px-1 m-1"} onClick={() => setFilterStatus('geplant')}>Geplant</button>
         <button className={filterStatus === "abgeschlossen" ? "bg-blue-800 rounded px-1 m-1" : "bg-blue-600 px-1 m-1"} onClick={() => setFilterStatus("abgeschlossen")}>Abgeschlossen</button>
+      </div>
+      <div className="flex gap-4 mb-6">
+        <div className="p-4 rounded border bg-green-100 text-black">
+          <p>Unterwegs</p>
+          <p className="text-2xl font-bold">{anzahlUnterwegs}</p>
+        </div>  
+          <div className="p-4 rounded border bg-yellow-100 text-black">
+            <p>Geplant</p>
+            <p className="text-2xl font-bold">{anzahlGeplant}</p>
+          </div>
+        
+          <div className="p-4 rounded border bg-blue-100 text-black">
+            <p>Abgeschlossen</p>
+            <p className="text-2xl font-bold">{anzahlAbgeschlossen}</p>
+          </div>
       </div>
       <table className="w-full border-collapse">
         <thead>
