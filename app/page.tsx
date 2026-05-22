@@ -27,6 +27,9 @@ export default function Home() {
     stops: '',
     total_packages: ''
   })
+  const [filterStatus, setFilterStatus] = useState("")
+  const [filteredRoutes, setFilteredRoutes] = useState<Route[]>([])
+
   const [editingRoute, setEditingRoute] = useState<Route | null>(null)
 
   async function fetchRoutes() {
@@ -47,6 +50,15 @@ export default function Home() {
     fetchRoutes()
     fetchDrivers()
   }, [])
+
+  useEffect(() => {
+    if (filterStatus === "") {
+      setFilteredRoutes(routes)
+    } else {
+      const gefiltert = routes.filter(route => route.status === filterStatus)
+      setFilteredRoutes(gefiltert)
+    }
+  },[filterStatus])
 
   function getStatusStyle(status: string) {
     if (status === 'unterwegs') return 'bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm'
@@ -170,6 +182,12 @@ export default function Home() {
         </button>
       </div>
       {loading && <p>Daten werden geladen</p>}
+      <div>
+        <button className={filterStatus === "" ? "bg-gray-800 rounded px-1 m-1" : "bg-gray-600 rounded px-1 m-1"} onClick={() => setFilterStatus("")}>Alle</button>
+        <button className={filterStatus === "unterwegs" ? "bg-green-800 rounded px-1 m-1" : "bg-green-600 rounded px-1 m-1"} onClick={() => setFilterStatus("unterwegs")}>Unterwegs</button>
+        <button className={filterStatus === "geplant" ? "bg-yellow-800 rounded px-1 m-1" : "bg-yellow-600 px-1 m-1"} onClick={() => setFilterStatus('geplant')}>Geplant</button>
+        <button className={filterStatus === "abgeschlossen" ? "bg-blue-800 rounded px-1 m-1" : "bg-blue-600 px-1 m-1"} onClick={() => setFilterStatus("abgeschlossen")}>Abgeschlossen</button>
+      </div>
       <table className="w-full border-collapse">
         <thead>
           <tr className="bg-blue-600 text-white">
@@ -183,7 +201,7 @@ export default function Home() {
           </tr>
         </thead>
         <tbody>
-          {routes.map((route) => (
+          {filteredRoutes.map((route) => (
             <tr key={route.id} className="border-b hover:bg-gray-50 hover:text-black">
               <td className="p-3">{route.id}</td>
               <td className="p-3">{route.name}</td>
