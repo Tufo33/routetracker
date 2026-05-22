@@ -36,6 +36,8 @@ export default function Home() {
     visible: false,
   })
   const [searchTerm, setSearchTerm] = useState("")
+  const [sortField, setSortField] = useState("id")
+  const [sortDirection, setSortDirection] = useState("asc")
 
 
   async function fetchRoutes() {
@@ -131,6 +133,13 @@ export default function Home() {
   const anzahlGeplant = routes.filter(route => route.status === "geplant").length
   const anzahlAbgeschlossen = routes.filter(route => route.status === "abgeschlossen").length
   const searchedRoutes = filteredRoutes.filter(route => route.name.toLowerCase().includes(searchTerm.toLowerCase()) )
+  const sortedRoutes = [...searchedRoutes].sort((a, b) => {
+    if (sortDirection === "asc") {
+      return (a[sortField as keyof Route] as number) - (b[sortField as keyof Route] as number)
+    } else {
+      return (b[sortField as keyof Route] as number) - (a[sortField as keyof Route] as number)
+    }
+  })
 
   return(
     <div className="p-8">
@@ -243,13 +252,24 @@ export default function Home() {
             <th className="p-3 text-left">Fahrer</th>
             <th className="p-3 text-left">Email</th>
             <th className="p-3 text-left">Status</th>
-            <th className="p-3 text-left">Stops</th>
-            <th className="p-3 text-left">Pakete</th>
+            <th 
+            className="p-3 text-left cursor-pointer" 
+            onClick={() => {
+              setSortField("stops") 
+              setSortDirection(sortDirection === "asc" ? "desc" : "asc")}}>
+              Stops
+            </th>
+            <th 
+            className="p-3 text-left cursor-pointer" 
+            onClick={() => {
+              setSortField("total_packages")
+              setSortDirection(sortDirection === "asc" ? "desc" : "asc")}}>Pakete
+            </th>
             <th className="p-3 text-left">Aktion</th>
           </tr>
         </thead>
         <tbody>
-          {searchedRoutes.map((route) => (
+          {sortedRoutes.map((route) => (
             <tr key={route.id} className="border-b hover:bg-gray-50 hover:text-black">
               <td className="p-3">{route.id}</td>
               <td className="p-3">{route.name}</td>
