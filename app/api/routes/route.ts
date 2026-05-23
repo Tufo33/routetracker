@@ -13,8 +13,12 @@ export async function GET(request: Request) {
     const result = await client.query(
         `SELECT routes.id, drivers.name, drivers.email, routes.status, routes.stops, routes.total_packages FROM routes JOIN drivers ON routes.driver_id = drivers.id LIMIT 10 OFFSET ${offset}`
     )
+    const countResult = await client.query('SELECT COUNT(*) FROM routes')
     client.release()
-    return NextResponse.json(result.rows)
+    return NextResponse.json({
+        routes: result.rows,
+        total: countResult.rows[0].count
+    })
 }
 
 export async function POST(request: Request) {

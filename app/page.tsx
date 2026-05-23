@@ -39,12 +39,14 @@ export default function Home() {
   const [sortField, setSortField] = useState("id")
   const [sortDirection, setSortDirection] = useState("asc")
   const [currentPage, setCurrentPage] = useState(1)
+  const [totalRoutes, setTotalRoutes] = useState(0)
 
   async function fetchRoutes() {
     setLoading(true)
     const res = await fetch(`/api/routes?page=${currentPage}`)
     const data = await res.json()
-    setRoutes(data)
+    setRoutes(data.routes)
+    setTotalRoutes(Number(data.total))
     setLoading(false)
   }
 
@@ -140,6 +142,7 @@ export default function Home() {
       return (b[sortField as keyof Route] as number) - (a[sortField as keyof Route] as number)
     }
   })
+  const totalPages = Math.ceil(totalRoutes / 10)
 
   return(
     <div className="p-8">
@@ -254,7 +257,7 @@ export default function Home() {
             <th className="p-3 text-left hidden md:table-cell">Email</th>
             <th className="p-3 text-left">Status</th>
             <th 
-            className="p-3 text-left cursor-pointer" 
+            className="p-3 text-left cursor-pointer hidden md:table-cell" 
             onClick={() => {
               setSortField("stops") 
               setSortDirection(sortDirection === "asc" ? "desc" : "asc")}}>
@@ -277,17 +280,17 @@ export default function Home() {
               <td className="p-3 hidden md:table-cell">{route.email}</td>
               <td className="p-3">
                 <span className={getStatusStyle(route.status)} >{route.status}</span></td>
-              <td className="p-3">{route.stops}</td>
+              <td className="p-3 hidden md:table-cell">{route.stops}</td>
               <td className="p-3">{route.total_packages}</td>
               <td className="p-3">
                 <button 
                   onClick={() => handleEdit(route)}
-                  className="bg-yellow-500 text-white px-2 py-1 rounded mr-2">
+                  className="bg-yellow-500 text-white px-2 py-1 rounded mr-2 min-w-[100px] text-center">
                   Bearbeiten
                 </button>
                 <button 
                   onClick={() => handleDelete(route.id)}
-                  className="bg-red-500 text-white px-2 py-1 rounded">
+                  className="bg-red-500 text-white px-2 py-1 rounded min-w-[100px] text-center">
                   Löschen
                 </button>
               </td>
@@ -301,7 +304,13 @@ export default function Home() {
         className={currentPage === 1? "bg-gray-200 p-1 rounded m-1 cursor-not-allowed" : "bg-gray-400 p-1 rounded m-1"} 
         onClick={() => setCurrentPage(currentPage -1)} 
         >Zurück</button>
-      <button className="bg-gray-400 p-1 rounded m-1" onClick={() => setCurrentPage(currentPage +1)}>Weiter</button>
+        <span>Seite {currentPage} von {totalPages}</span>
+      <button
+        disabled={currentPage === totalPages} 
+        className={currentPage === totalPages ? "bg-gray-200 p-1 rounded m-1 cursor-not-allowed" : "bg-gray-400 p-1 rounded m-1"} 
+        onClick={() => setCurrentPage(currentPage +1)}
+        >Weiter
+      </button>
     </div>
   )
 }
