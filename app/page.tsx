@@ -217,18 +217,18 @@ export default function Home() {
         </button>
       </div>
       {loading && <p>Daten werden geladen</p>}
-      <div className="mb-4">
+      <div className="mb-4 flex flex-wrap gap-1">
           <input
-            className="border p-2 mr-2 mb-4 rounded w-64"
+            className="border p-2 mb-2 rounded w-full md:w-64"
             type="text"
             placeholder="Fahrer suchen..."
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
           />
-        <button className={filterStatus === "" ? "bg-gray-800 rounded px-1 m-1" : "bg-gray-600 rounded px-1 m-1"} onClick={() => setFilterStatus("")}>Alle</button>
-        <button className={filterStatus === "unterwegs" ? "bg-green-800 rounded px-1 m-1" : "bg-green-600 rounded px-1 m-1"} onClick={() => setFilterStatus("unterwegs")}>Unterwegs</button>
-        <button className={filterStatus === "geplant" ? "bg-yellow-800 rounded px-1 m-1" : "bg-yellow-600 px-1 m-1"} onClick={() => setFilterStatus('geplant')}>Geplant</button>
-        <button className={filterStatus === "abgeschlossen" ? "bg-blue-800 rounded px-1 m-1" : "bg-blue-600 px-1 m-1"} onClick={() => setFilterStatus("abgeschlossen")}>Abgeschlossen</button>
+        <button className={filterStatus === "" ? "bg-gray-800 rounded p-3 m-1 min-w-[80px] text-sm" : "bg-gray-600 rounded p-3 m-1 min-w-[80px] text-sm"} onClick={() => setFilterStatus("")}>Alle</button>
+        <button className={filterStatus === "unterwegs" ? "bg-green-800 rounded p-3 m-1 min-w-[80px] text-sm" : "bg-green-600 rounded p-3 m-1 min-w-[80px] text-sm"} onClick={() => setFilterStatus("unterwegs")}>Unterwegs</button>
+        <button className={filterStatus === "geplant" ? "bg-yellow-800 rounded p-3 m-1 min-w-[80px] text-sm" : "bg-yellow-600 rounded p-3 m-1 min-w-[80px] text-sm"} onClick={() => setFilterStatus('geplant')}>Geplant</button>
+        <button className={filterStatus === "abgeschlossen" ? "bg-blue-800 rounded p-3 m-1 min-w-[80px] text-sm" : "bg-blue-600 rounded p-3 m-1 min-w-[80px] text-sm"} onClick={() => setFilterStatus("abgeschlossen")}>Abgeschlossen</button>
       </div>
       <div className="flex gap-4 mb-6">
         <div className="p-4 rounded border bg-green-100 text-black">
@@ -245,12 +245,13 @@ export default function Home() {
             <p className="text-2xl font-bold">{anzahlAbgeschlossen}</p>
           </div>
       </div>
+      <div className="overflow-x-auto">        
       <table className="w-full border-collapse">
         <thead>
           <tr className="bg-blue-600 text-white">
-            <th className="p-3 text-left">ID</th>
+            <th className="p-3 text-left hidden md:table-cell">ID</th>
             <th className="p-3 text-left">Fahrer</th>
-            <th className="p-3 text-left">Email</th>
+            <th className="p-3 text-left hidden md:table-cell">Email</th>
             <th className="p-3 text-left">Status</th>
             <th 
             className="p-3 text-left cursor-pointer" 
@@ -271,9 +272,9 @@ export default function Home() {
         <tbody>
           {sortedRoutes.map((route) => (
             <tr key={route.id} className="border-b hover:bg-gray-50 hover:text-black">
-              <td className="p-3">{route.id}</td>
+              <td className="p-3 hidden md:table-cell">{route.id}</td>
               <td className="p-3">{route.name}</td>
-              <td className="p-3">{route.email}</td>
+              <td className="p-3 hidden md:table-cell">{route.email}</td>
               <td className="p-3">
                 <span className={getStatusStyle(route.status)} >{route.status}</span></td>
               <td className="p-3">{route.stops}</td>
@@ -294,11 +295,12 @@ export default function Home() {
           ))}
         </tbody>
       </table>
+      </div>
       <button 
         disabled = { currentPage === 1 }
         className={currentPage === 1? "bg-gray-200 p-1 rounded m-1 cursor-not-allowed" : "bg-gray-400 p-1 rounded m-1"} 
-          onClick={() => setCurrentPage(currentPage -1)} 
-      >Zurück</button>
+        onClick={() => setCurrentPage(currentPage -1)} 
+        >Zurück</button>
       <button className="bg-gray-400 p-1 rounded m-1" onClick={() => setCurrentPage(currentPage +1)}>Weiter</button>
     </div>
   )
